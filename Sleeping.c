@@ -1,9 +1,9 @@
 #include <pthread.h>		
 #include <semaphore.h>		
 #include <stdio.h>	
+#include<math.h>		//for using rand() function.
 
-
-pthread_t *Students[100];
+pthread_t Students[100];
 
 pthread_t TA;		
 
@@ -90,7 +90,7 @@ void main()
 		sem_init(&ChairsSem[i], 0, 1);		
 	}
 
-	input=i%3;
+	input=rand()%10;
 	pthread_mutex_init(&ChairAccess, NULL);
 	
 	if(input<=1)
