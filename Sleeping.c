@@ -7,7 +7,7 @@
 pthread_t *Students;		//for N no. of Students.
 pthread_t TA;		
 
-int ChairsCount = 0;
+int ChairsCount = 0,CurrentIndex=0;
 
 sem_t TA_Sleep;
 sem_t Student_Sem;
@@ -16,25 +16,26 @@ pthread_mutex_t ChairAccess;
 
 void *TA_Activity()
 {
+	
+	sem_wait(&TA_Sleep);		//TA is currently sleeping.
+	printf("\n\tTA has been awakened by a student.\t\n");
 	while(1)
 	{
-		sem_wait(&TA_Sleep);		//TA is currently sleeping.
-		printf("\n\tTA has been awakened by a student.\t\n");
-
 		// lock
 		pthread_mutex_lock(&ChairAccess);
 		
 		if(ChairsCount == 0) 
 		{
-			//if chairs are empty, break the loop.
+			//if chairs are empty
 			pthread_mutex_unlock(&ChairAccess);
 			break;
 		}
 		//TA gets next student on chair.
-		sem_post(&ChairsSem[count]);
+		sem_post(&ChairsSem[CurrentIndex]);
 		ChairsCount--;
-		count++;
+		
 		printf("Student left his/her chair. Remaining Chairs %d\n", 3 - ChairsCount);
+		CurrentIndex= CurrentIndex % 3;
 		pthread_mutex_unlock(&ChairAccess);
 
 		sleep(3);
@@ -60,13 +61,13 @@ void *Student_Activity(void *threadID)
 		
 		// lock
 		pthread_mutex_lock(&ChairAccess);
+		CurrentIndex = (CurrentIndex + ChairCount) %3;
 		ChairsCount++;
-		count--;
 		printf("Student sat on chair.Chairs Remaining: %d\n", 3 - ChairsCount);
 		pthread_mutex_unlock(&ChairAccess);
 
 		// unlock
-		sem_wait(&ChairsSem[count]);		//Student leaves his/her chair.
+		sem_wait(&ChairsSem[CurrentIndex]);		//Student leaves his/her chair.
 		printf("\t Student %ld is getting help from the TA. \n", (long)threadID);
 		sem_wait(&Student_Sem);		//Student waits to go next.
 	}
