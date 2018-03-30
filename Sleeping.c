@@ -3,11 +3,11 @@
 #include <stdio.h>	
 #include<math.h>		//for using rand() function.
 
-pthread_t Students[100];
-
+//pthread_t Students[100];
+pthread_t *Students;		//for N no. of Students.
 pthread_t TA;		
 
-int ChairsCount = 0,count=0;
+int ChairsCount = 0;
 
 sem_t TA_Sleep;
 sem_t Student_Sem;
@@ -92,7 +92,7 @@ void main()
 
 	input=rand()%10;
 	pthread_mutex_init(&ChairAccess, NULL);
-	
+	//input = 0;
 	if(input<=1)
 	{
 		printf("Number of Students not specified. Using default (4) students.\n");
@@ -105,6 +105,7 @@ void main()
 		cstudents = input;
 	}
 	
+	Students = malloc(sizeof(cstudents));
 	
 	pthread_create(&TA, NULL, TA_Activity, NULL);	
 	
