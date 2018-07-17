@@ -1,2 +1,2 @@
-# Project
-Operating System Project
+# Opeating System Project
+Sleeping Teacher Assistant Problem
